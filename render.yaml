@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: tingestudies
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: openai/gpt-5.4-mini
+      - key: PORT
+        value: 8000
