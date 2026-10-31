@@ -24,7 +24,7 @@ function App() {
       text: 'Upload your lecture materials to begin. Only PDF, DOCX, and PPTX files are accepted.',
     },
   ]);
-  const messagesEndRef = useRef(null);
+  const messagesListRef = useRef(null);
 
   const acceptedFileText = useMemo(
     () => ACCEPTED_TYPES.map((type) => type.toUpperCase().replace('.', '')).join(', '),
@@ -32,7 +32,9 @@ function App() {
   );
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesListRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
   }, [chatMessages, isChatOpen]);
 
   const addMessage = (sender, text) => {
@@ -226,14 +228,13 @@ function App() {
 
               {isChatOpen && (
                 <>
-                  <div className="messages" aria-live="polite">
+                  <div className="messages" ref={messagesListRef} aria-live="polite">
                     {chatMessages.map((message, index) => (
                       <div key={`${message.sender}-${index}`} className={`message ${message.sender}`}>
                         <span>{message.sender === 'assistant' ? 'AI tutor' : 'You'}</span>
                         <p>{message.text}</p>
                       </div>
                     ))}
-                    <div ref={messagesEndRef} />
                   </div>
 
                   <form onSubmit={handleQuestionSubmit} className="chat-composer">

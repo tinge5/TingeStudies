@@ -183,6 +183,9 @@ textarea {
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 2rem);
+  background: rgba(57, 33, 21, 0.98);
+  border-color: rgba(251, 146, 60, 0.45);
+  box-shadow: 0 30px 70px rgba(19, 10, 5, 0.85);
 }
 
 .chat-panel.collapsed {
@@ -210,12 +213,16 @@ textarea {
   max-height: 420px;
   min-height: 180px;
   overflow-y: auto;
-  padding-right: 0.2rem;
+  padding: 0.6rem 0.4rem 0.2rem 0.2rem;
+  scroll-behavior: smooth;
+  background: rgba(33, 21, 14, 0.35);
+  border-radius: 12px;
 }
 
 .chat-panel.fullscreen .messages {
   max-height: none;
   flex: 1;
+  background: rgba(23, 17, 13, 0.5);
 }
 
 .message {
@@ -258,6 +265,13 @@ textarea {
   margin-top: 1rem;
   padding-top: 0.8rem;
   border-top: 1px solid rgba(251, 146, 60, 0.16);
+  background: rgba(33, 21, 14, 0.38);
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+
+.chat-panel.fullscreen .chat-composer {
+  background: rgba(33, 21, 14, 0.7);
 }
 
 .composer-actions {
