@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8010';
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8010'
+    : window.location.origin);
 const ACCEPTED_TYPES = ['.pdf', '.docx', '.pptx'];
 
 function App() {
