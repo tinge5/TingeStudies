@@ -146,7 +146,7 @@ class StudyRAG:
             model=get_chat_model_name(),
             messages=messages,
             temperature=0.2,
-            max_completion_tokens=220,
+            max_completion_tokens=350,
         )
         return completion.choices[0].message.content.strip()
 
@@ -172,6 +172,6 @@ class StudyRAG:
                 {"role": "user", "content": prompt},
             ],
             temperature=0.4,
-            max_completion_tokens=300,
+            max_completion_tokens=350,
         )
         return completion.choices[0].message.content.strip()

@@ -6,9 +6,30 @@ const API_BASE =
     ? 'http://localhost:8010'
     : window.location.origin);
 const ACCEPTED_TYPES = ['.pdf', '.docx', '.pptx'];
+const WAKE_UP_MESSAGE = 'Please wait a minute — waking up server...';
+
+function WakeUpLoader() {
+  const [isBlinking, setIsBlinking] = useState(true);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setIsBlinking((value) => !value);
+    }, 700);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  return (
+    <div className="wake-up-shell">
+      <div className="wake-up-spinner" aria-label="Loading" />
+      <p className={`wake-up-text ${isBlinking ? 'is-visible' : 'is-hidden'}`}>{WAKE_UP_MESSAGE}</p>
+    </div>
+  );
+}
 
 function App() {
   const [sessionId] = useState(() => crypto.randomUUID());
+  const [serverReady, setServerReady] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [question, setQuestion] = useState('');
@@ -32,10 +53,46 @@ function App() {
   );
 
   useEffect(() => {
+    let isMounted = true;
+    let timeoutId;
+
+    const checkServerHealth = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/health`, { method: 'GET' });
+        if (!isMounted) return;
+
+        if (response.ok) {
+          setServerReady(true);
+          return;
+        }
+      } catch (error) {
+        // Server may still be waking up on a cold start; keep polling.
+      }
+
+      if (isMounted) {
+        timeoutId = window.setTimeout(checkServerHealth, 2000);
+      }
+    };
+
+    checkServerHealth();
+
+    return () => {
+      isMounted = false;
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const container = messagesListRef.current;
     if (!container) return;
     container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
   }, [chatMessages, isChatOpen]);
+
+  if (!serverReady) {
+    return <WakeUpLoader />;
+  }
 
   const addMessage = (sender, text) => {
     setChatMessages((current) => [...current, { sender, text }]);
