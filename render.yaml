@@ -12,4 +12,4 @@ services:
       - key: OPENAI_MODEL
         value: openai/gpt-5.4-mini
       - key: PORT
-        value: 8000
+        value: 8010

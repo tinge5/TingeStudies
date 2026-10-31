@@ -18,6 +18,7 @@ build/
 # App storage
 backend/uploads/
 backend/data/
+notes.txt
 
 # OS
 .DS_Store

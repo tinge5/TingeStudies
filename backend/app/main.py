@@ -14,7 +14,7 @@ from app.rag import APP_STORAGE_DIR, StudyRAG
 app = FastAPI(title="TingeStudies", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|0\.0\.0\.0):\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -84,7 +84,7 @@ def chat_with_agent(payload: ChatRequest):
     if not rag.get_session_documents(payload.sessionId):
         raise HTTPException(status_code=400, detail="Upload lecture files before asking questions.")
 
-    history = [{"role": role, "content": content} for role, content in get_recent_messages(payload.sessionId, limit=4)]
+    history = [{"role": role, "content": content} for role, content in get_recent_messages(payload.sessionId, limit=5)]
     save_message(payload.sessionId, "user", payload.question)
     answer = rag.answer_question(payload.sessionId, payload.question, history=history)
     save_message(payload.sessionId, "assistant", answer)

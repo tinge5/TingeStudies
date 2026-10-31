@@ -128,14 +128,15 @@ class StudyRAG:
         context_text = "\n\n".join(context_chunks)
 
         prompt = (
-            "You are a study tutor. Answer using only the uploaded lecture content below. "
+            "You are a study tutor. Answer briefly using only the uploaded lecture content below. "
+            "Keep the response to 2-4 sentences unless the user asks for more detail. "
             "If the answer is not clearly supported by the uploaded materials, say that it is not in the provided files. "
             "Do not use outside knowledge or web sources.\n\n"
             f"Context from uploaded files:\n{context_text}\n\nQuestion: {question}"
         )
 
         messages = [
-            {"role": "system", "content": "You are a factual study assistant that only answers from the user-uploaded content."},
+            {"role": "system", "content": "You are a factual study assistant that answers briefly and only from the uploaded course materials."},
         ]
         if history:
             messages.extend(history)
@@ -145,7 +146,7 @@ class StudyRAG:
             model=get_chat_model_name(),
             messages=messages,
             temperature=0.2,
-            max_tokens=500,
+            max_completion_tokens=220,
         )
         return completion.choices[0].message.content.strip()
 
@@ -159,7 +160,7 @@ class StudyRAG:
 
         context_text = "\n\n".join(docs[:10])
         prompt = (
-            "Create 5 study questions based only on the uploaded lecture content below. "
+            "Create 5 concise study questions based only on the uploaded lecture content below. "
             "Focus on the requested topic: {topic}. Return only a numbered list.\n\n"
             f"Context:\n{context_text}"
         ).format(topic=topic)
@@ -167,10 +168,10 @@ class StudyRAG:
         completion = self.client.chat.completions.create(
             model=get_chat_model_name(),
             messages=[
-                {"role": "system", "content": "Generate practice questions only from the uploaded material."},
+                {"role": "system", "content": "Generate brief practice questions only from the uploaded material."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.4,
-            max_tokens=600,
+            max_completion_tokens=300,
         )
         return completion.choices[0].message.content.strip()

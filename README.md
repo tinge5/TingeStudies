@@ -7,6 +7,7 @@ A lecture study assistant app that lets students upload course materials and ask
 - Accepts PDF, DOCX, and PPTX uploads only
 - Restricts Q&A to the uploaded file contents only
 - Keeps chat history in SQLite and only sends the last 5 relevant messages to the model
+- Keeps AI responses brief by default to reduce token usage
 - Enables chat with an OpenAI-backed assistant
 - Generates study questions from the uploaded materials on a chosen topic
 - Designed to be easy to push to GitHub and continue building
@@ -29,7 +30,7 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8010
 ```
 
 ### 2) Frontend
@@ -37,10 +38,10 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev -- --port 5174
 ```
 
-Then open the frontend locally (usually `http://localhost:5173`) and upload lecture files.
+Then open the frontend locally at `http://localhost:5174` and upload lecture files.
 
 ## How to test the app
 
