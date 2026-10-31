@@ -129,7 +129,7 @@ class StudyRAG:
 
         prompt = (
             "You are a study tutor. Answer briefly using only the uploaded lecture content below. "
-            "Keep the response to 2-4 sentences unless the user asks for more detail. "
+            "Keep the response to 4-6 sentences unless the user asks for more detail. If question can be answered in less do that first. "
             "If the answer is not clearly supported by the uploaded materials, say that it is not in the provided files. "
             "Do not use outside knowledge or web sources.\n\n"
             f"Context from uploaded files:\n{context_text}\n\nQuestion: {question}"
