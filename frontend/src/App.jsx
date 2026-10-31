@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -16,17 +16,24 @@ function App() {
   const [flashMessage, setFlashMessage] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
+  const [isChatFullscreen, setIsChatFullscreen] = useState(false);
   const [chatMessages, setChatMessages] = useState([
     {
       sender: 'assistant',
       text: 'Upload your lecture materials to begin. Only PDF, DOCX, and PPTX files are accepted.',
     },
   ]);
+  const messagesEndRef = useRef(null);
 
   const acceptedFileText = useMemo(
     () => ACCEPTED_TYPES.map((type) => type.toUpperCase().replace('.', '')).join(', '),
     [],
   );
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages, isChatOpen]);
 
   const addMessage = (sender, text) => {
     setChatMessages((current) => [...current, { sender, text }]);
@@ -75,6 +82,7 @@ function App() {
 
       setUploadedFiles(data.files);
       setSelectedFiles([]);
+      setIsChatOpen(true);
       addMessage(
         'assistant',
         `Uploaded ${data.files.length} lecture file(s). You can start asking questions based only on these materials.`,
@@ -101,6 +109,7 @@ function App() {
     setIsSending(true);
     setFlashMessage('');
     addMessage('user', trimmed);
+    setQuestion('');
 
     try {
       const response = await fetch(`${API_BASE}/api/chat`, {
@@ -115,7 +124,6 @@ function App() {
       }
 
       addMessage('assistant', data.answer);
-      setQuestion('');
     } catch (error) {
       setFlashMessage(error.message || 'Unable to answer that question.');
     } finally {
@@ -203,36 +211,51 @@ function App() {
 
         {uploadedFiles.length > 0 && (
           <>
-            <section className="chat-panel">
+            <section className={`chat-panel ${isChatFullscreen ? 'fullscreen' : ''} ${isChatOpen ? '' : 'collapsed'}`}>
               <div className="chat-header">
                 <h2>Study chat</h2>
+                <div className="chat-actions">
+                  <button type="button" className="secondary-button" onClick={() => setIsChatOpen((open) => !open)}>
+                    {isChatOpen ? 'Hide chat' : 'Show chat'}
+                  </button>
+                  <button type="button" className="secondary-button" onClick={() => setIsChatFullscreen((value) => !value)}>
+                    {isChatFullscreen ? 'Exit full screen' : 'Full screen'}
+                  </button>
+                </div>
               </div>
-              <div className="messages" aria-live="polite">
-                {chatMessages.map((message, index) => (
-                  <div key={`${message.sender}-${index}`} className={`message ${message.sender}`}>
-                    <span>{message.sender === 'assistant' ? 'AI tutor' : 'You'}</span>
-                    <p>{message.text}</p>
+
+              {isChatOpen && (
+                <>
+                  <div className="messages" aria-live="polite">
+                    {chatMessages.map((message, index) => (
+                      <div key={`${message.sender}-${index}`} className={`message ${message.sender}`}>
+                        <span>{message.sender === 'assistant' ? 'AI tutor' : 'You'}</span>
+                        <p>{message.text}</p>
+                      </div>
+                    ))}
+                    <div ref={messagesEndRef} />
                   </div>
-                ))}
-              </div>
+
+                  <form onSubmit={handleQuestionSubmit} className="chat-composer">
+                    <textarea
+                      value={question}
+                      onChange={(event) => setQuestion(event.target.value)}
+                      placeholder="Ask about your uploaded lecture materials..."
+                      rows="3"
+                    />
+                    <div className="composer-actions">
+                      <button type="submit" disabled={isSending}>
+                        {isSending ? 'Sending...' : 'Ask'}
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
             </section>
 
-            <div className="action-grid">
-              <form onSubmit={handleQuestionSubmit} className="prompt-box">
-                <label className="label">Ask a question</label>
-                <textarea
-                  value={question}
-                  onChange={(event) => setQuestion(event.target.value)}
-                  placeholder="Ask about the uploaded lecture materials..."
-                  rows="3"
-                />
-                <button type="submit" disabled={isSending}>
-                  {isSending ? 'Loading...' : 'Ask'}
-                </button>
-              </form>
-
+            <div className="study-panel">
               <form onSubmit={handleTopicSubmit} className="prompt-box">
-                <label className="label">Generate study questions</label>
+                <label className="label">Study tips</label>
                 <input
                   type="text"
                   value={topic}
@@ -240,7 +263,7 @@ function App() {
                   placeholder="Topic you need help with"
                 />
                 <button type="submit" disabled={isSending}>
-                  {isSending ? 'Generating...' : 'Generate'}
+                  {isSending ? 'Generating...' : 'Generate study tips'}
                 </button>
               </form>
             </div>
