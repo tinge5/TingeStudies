@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Tinge Studies favicon">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#191a2b"/>
+      <stop offset="100%" stop-color="#0c1018"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#c58bff"/>
+      <stop offset="100%" stop-color="#6cc6ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="22" fill="url(#bg)"/>
+  <path d="M26 37 64 22l38 15v36L64 88 26 73V37Zm38 13 24 10-24 10-24-10 24-10Zm-8 18v13l-18-7v-13l18 7Z" fill="#f1f4ff"/>
+  <path d="M42 58c7 4 12 6 22 6s15-2 22-6v15c-7 5-12 7-22 7s-15-2-22-7V58Z" fill="url(#accent)" opacity="0.96"/>
+</svg>
