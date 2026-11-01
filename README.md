@@ -54,26 +54,39 @@ Then open the frontend locally at `http://localhost:5174` and upload lecture fil
 
 ## Render deployment
 
-This repo includes a Docker + Render setup for deployment.
+The recommended deployment is two separate Render services:
 
-### Files included
+1. Backend service for the FastAPI app
+2. Frontend static service for the Vite app
 
-- `Dockerfile`
-- `render.yaml`
-- `.dockerignore`
+This keeps the frontend fast and lets you control the custom loading screen while the backend cold-starts.
 
-### Render steps
+### Backend service
 
-1. Push this repo to GitHub.
-2. In Render, click New + Web Service.
-3. Connect the GitHub repo.
-4. Render will read `render.yaml` automatically.
-5. Add the environment variables in Render:
-   - `OPENAI_API_KEY`
-   - `OPENAI_MODEL=openai/gpt-5.4-mini`
-6. Deploy.
+Use a Render Web Service for the backend.
 
-The backend serves the built frontend automatically when the Vite build is available.
+- Root repo: this project
+- Build command: `cd backend && pip install -r requirements.txt`
+- Start command: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Environment variables:
+  - `OPENAI_API_KEY`
+  - `OPENAI_MODEL=openai/gpt-5.4-mini`
+
+### Frontend service
+
+Use a Render Static Site for the frontend.
+
+- Root repo: this project
+- Build command: `cd frontend && npm install && npm run build`
+- Publish directory: `frontend/dist`
+- Add build-time env var:
+  - `VITE_API_BASE=https://your-backend-service.onrender.com`
+
+The frontend app now shows a custom orange loading screen while it waits for `/api/health` to respond from the backend. Once the backend is ready, the actual app loads automatically.
+
+### Optional root render config
+
+A root `render.yaml` can define both services if you want Render to manage them together, but separate services are usually easier for the cold-start experience you want.
 
 ## Notes
 
