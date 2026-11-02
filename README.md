@@ -1,96 +1,54 @@
-# TingeStudies
+# Tinge Studies
 
-A lecture study assistant app that lets students upload course materials and ask questions based only on the uploaded files.
+Tinge Studies is a study-focused AI application built to help students learn from the materials they already have. Instead of giving generic answers from the web, the app stays grounded in the files the user uploads, turning course content into a more reliable and focused learning assistant.
 
-## Features
+## What the app is
 
-- Accepts PDF, DOCX, and PPTX uploads only
-- Restricts Q&A to the uploaded file contents only
-- Keeps chat history in SQLite and only sends the last 5 relevant messages to the model
-- Keeps AI responses brief by default to reduce token usage
-- Enables chat with an OpenAI-backed assistant
-- Generates study questions from the uploaded materials on a chosen topic
-- Designed to be easy to push to GitHub and continue building
+This project is designed for students and learners who want to study from lecture materials in a more interactive way. Users can upload supported files, ask questions about the content, and get answers based only on what was included in those documents.
 
-## Model configuration
+The app is built around a few core experiences:
 
-This app pulls its OpenAI settings from your local environment and matches the model family already used in your CrewAI project:
+- upload lecture files in supported formats
+- ask questions grounded only in the uploaded content
+- generate study questions around a topic the user needs help with
+- keep the feedback loop focused and useful for review
+- make the interface feel like a simple chat-based study assistant
 
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL=openai/gpt-5.4-mini`
+## How it was built
 
-The `.env` file is intentionally ignored by Git so it stays local to your machine.
+The app combines a lightweight frontend with a backend that processes uploaded files and retrieves relevant context before generating an answer. The system was designed to behave more like a document-based learning tool than a general-purpose chatbot.
 
-## Local setup
+The document pipeline is built to accept lecture material, extract the relevant text, and use retrieval-based logic to find the most relevant sections before the AI responds. That keeps answers tied to the user’s own study materials and helps reduce the risk of drifting into unrelated or unsupported information.
 
-### 1) Backend
+I also shaped the product around a focused study workflow instead of a broad AI assistant. The workflow encourages the user to upload course materials first, then ask targeted questions or generate review prompts from those materials.
 
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8010
-```
+## Why I built it this way
 
-### 2) Frontend
+The purpose of the project was to create a practical learning tool that feels genuinely useful in a school or study setting. Many AI tools are broad and generic, but this app is intentionally scoped to a single concept: your own uploaded notes, slides, and lecture documents.
 
-```bash
-cd frontend
-npm install
-npm run dev -- --port 5174
-```
+A few design principles guided the build:
 
-Then open the frontend locally at `http://localhost:5174` and upload lecture files.
+- prioritize grounded answers over generic AI output
+- keep the learning experience tied to actual course content
+- reduce unnecessary complexity for the user
+- make the app feel clean, fast, and focused on studying
+- support review workflows like topic-based study questions
 
-## How to test the app
+## Tech stack
 
-1. Start the backend in one terminal.
-2. Start the frontend in another terminal.
-3. Upload at least one PDF, DOCX, or PPTX file.
-4. Ask a question about the uploaded content.
-5. Confirm that the app blocks unsupported file types and blocks chat before upload.
-6. Try the study question generator with a topic like "cell respiration" or "regression analysis".
+- React + Vite for the frontend
+- FastAPI for the backend API
+- OpenAI-compatible chat model for responses
+- embedding and retrieval workflow for source-grounded answers
+- document parsing for PDF, DOCX, and PPTX inputs
+- SQLite for lightweight session memory
 
-## Render deployment
+## Project goals
 
-The recommended deployment is two separate Render services:
+The goal of Tinge Studies is to show that AI can be useful in an academic workflow when it is constrained to the right sources. Instead of using external knowledge or general web assumptions, the app stays focused on the content the student has already uploaded and reviewed.
 
-1. Backend service for the FastAPI app
-2. Frontend static service for the Vite app
+This makes the project useful as both a study tool and a portfolio example of grounded AI design, document processing, and user-focused application building.
 
-This keeps the frontend fast and lets you control the custom loading screen while the backend cold-starts.
+## Summary
 
-### Backend service
-
-Use a Render Web Service for the backend.
-
-- Root repo: this project
-- Build command: `cd backend && pip install -r requirements.txt`
-- Start command: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-- Environment variables:
-  - `OPENAI_API_KEY`
-  - `OPENAI_MODEL=openai/gpt-5.4-mini`
-
-### Frontend service
-
-Use a Render Static Site for the frontend.
-
-- Root repo: this project
-- Build command: `cd frontend && npm install && npm run build`
-- Publish directory: `frontend/dist`
-- Add build-time env var:
-  - `VITE_API_BASE=https://your-backend-service.onrender.com`
-
-The frontend app now shows a custom orange loading screen while it waits for `/api/health` to respond from the backend. Once the backend is ready, the actual app loads automatically.
-
-### Optional root render config
-
-A root `render.yaml` can define both services if you want Render to manage them together, but separate services are usually easier for the cold-start experience you want.
-
-## Notes
-
-- Users cannot ask questions until files have been uploaded.
-- Unsupported file types are rejected before processing.
-- The app is intentionally scoped to uploaded materials only and never calls external sources.
-- The AI sees only the latest relevant exchanges, which keeps costs lower and prevents the chat from ballooning in tokens.
+Tinge Studies is a polished, purpose-built study assistant for learners who want AI help grounded in their actual course materials. It combines document understanding, retrieval-based question answering, and a simple chat experience into a product that feels practical, educational, and easy to use.
